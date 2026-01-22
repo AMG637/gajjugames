@@ -6,6 +6,7 @@
     <title>Don't Tap The Red - GajjuGames</title>
     <link rel="icon" type="image/png" href="../assets/favicon.png">
     <link rel="apple-touch-icon" href="../assets/favicon.png">
+    <link rel="stylesheet" href="../assets/common.css">
     <style>
         * {
             margin: 0;
@@ -275,16 +276,24 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin: 30px 0;
-            perspective: 1500px;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
 
         .tile {
             aspect-ratio: 1;
             border-radius: 20px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
             border: 3px solid transparent;
             position: relative;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
 
         .tile.inactive {
@@ -295,16 +304,16 @@
         }
 
         .tile.active {
-            animation: tileRise 0.4s ease;
+            animation: tileRise 0.2s ease;
         }
 
         @keyframes tileRise {
             0% { 
-                transform: scale(0) rotateY(180deg); 
+                transform: scale(0.8); 
                 opacity: 0; 
             }
             100% { 
-                transform: scale(1) rotateY(0deg); 
+                transform: scale(1); 
                 opacity: 1; 
             }
         }
@@ -312,41 +321,31 @@
         .tile.green {
             background: linear-gradient(145deg, #00ff88, #00cc6a);
             border-color: #00ff88;
-            box-shadow: 
-                0 10px 30px rgba(0, 255, 136, 0.5),
-                0 0 40px rgba(0, 255, 136, 0.3) inset;
+            box-shadow: 0 8px 20px rgba(0, 255, 136, 0.4);
         }
 
         .tile.red {
             background: linear-gradient(145deg, #ff0055, #cc0044);
             border-color: #ff0055;
-            box-shadow: 
-                0 10px 30px rgba(255, 0, 85, 0.5),
-                0 0 40px rgba(255, 0, 85, 0.3) inset;
+            box-shadow: 0 8px 20px rgba(255, 0, 85, 0.4);
         }
 
         .tile.blue {
             background: linear-gradient(145deg, #00d9ff, #0099cc);
             border-color: #00d9ff;
-            box-shadow: 
-                0 10px 30px rgba(0, 217, 255, 0.5),
-                0 0 40px rgba(0, 217, 255, 0.3) inset;
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.4);
         }
 
         .tile.yellow {
             background: linear-gradient(145deg, #ffcc00, #ff9900);
             border-color: #ffcc00;
-            box-shadow: 
-                0 10px 30px rgba(255, 204, 0, 0.5),
-                0 0 40px rgba(255, 204, 0, 0.3) inset;
+            box-shadow: 0 8px 20px rgba(255, 204, 0, 0.4);
         }
 
         .tile.purple {
             background: linear-gradient(145deg, #cc00ff, #9900cc);
             border-color: #cc00ff;
-            box-shadow: 
-                0 10px 30px rgba(204, 0, 255, 0.5),
-                0 0 40px rgba(204, 0, 255, 0.3) inset;
+            box-shadow: 0 8px 20px rgba(204, 0, 255, 0.4);
         }
 
         .tile:not(.inactive):hover {
@@ -806,10 +805,9 @@
             bestScore: parseInt(localStorage.getItem('bestScore')) || 0,
             combo: 0,
             isPlaying: false,
-            speed: 900,
-            minSpeed: 300,
+            speed: 1200,
+            minSpeed: 400,
             interval: null,
-            speedInterval: null,
             userGamesPlayed: parseInt(localStorage.getItem('userGamesPlayed')) || 0,
             currentUser: null,
             playerName: localStorage.getItem('playerName') || null,
@@ -1103,26 +1101,18 @@
         function startGame() {
             gameState.score = 0;
             gameState.combo = 0;
-            gameState.speed = 900;
+            gameState.speed = 1200;
             gameState.isPlaying = true;
 
             updateGameUI();
             spawnTiles();
             
             gameState.interval = setInterval(spawnTiles, gameState.speed);
-            gameState.speedInterval = setInterval(() => {
-                if (gameState.speed > gameState.minSpeed) {
-                    gameState.speed -= 50;
-                    clearInterval(gameState.interval);
-                    gameState.interval = setInterval(spawnTiles, gameState.speed);
-                }
-            }, 3000);
         }
 
         function stopGame() {
             gameState.isPlaying = false;
             clearInterval(gameState.interval);
-            clearInterval(gameState.speedInterval);
             elements.tiles.forEach(tile => tile.className = 'tile inactive');
         }
 
@@ -1161,10 +1151,19 @@
                     playSound(800, 0.1);
                     updateGameUI();
 
+                    if (gameState.score <= 50 && gameState.score % 3 === 0) {
+                        const speedReduction = Math.floor(gameState.score / 3) * 50;
+                        gameState.speed = Math.max(400, 1200 - speedReduction);
+                        clearInterval(gameState.interval);
+                        gameState.interval = setInterval(spawnTiles, gameState.speed);
+                    }
+
                     if (gameState.combo > 0 && gameState.combo % 5 === 0) {
                         showCombo();
                         playSound(1200, 0.2);
                     }
+
+                    spawnTiles();
                 } else {
                     this.classList.add('wrong');
                     playSound(150, 0.4);
