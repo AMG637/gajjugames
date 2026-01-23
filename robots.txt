@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /assets/files/
 
-Sitemap: https://gajjugames.pages.dev/sitemap.xml
+Sitemap: https://www.gajjugames.com/sitemap.xml
