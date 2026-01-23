@@ -3,7 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GajjuGames - Play Free Online Games</title>
+    <title id="pageTitle">GajjuGames - Play Free Online Games</title>
+    <meta name="description" id="pageDesc" content="Play amazing free browser games at GajjuGames. No downloads needed!">
+    <meta name="keywords" id="pageKeywords" content="free online games, browser games, no download, web games, mobile games">
+    <link rel="canonical" href="https://gajjugames.pages.dev/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://gajjugames.pages.dev/">
+    <meta property="og:title" id="ogTitle" content="GajjuGames - Play Free Online Games">
+    <meta property="og:description" id="ogDesc" content="Play amazing free browser games at GajjuGames. No downloads needed!">
+    <meta property="og:image" id="ogImage" content="https://gajjugames.pages.dev/assets/logo.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://gajjugames.pages.dev/">
+    <meta property="twitter:title" id="twTitle" content="GajjuGames - Play Free Online Games">
+    <meta property="twitter:description" id="twDesc" content="Play amazing free browser games at GajjuGames. No downloads needed!">
+    <meta property="twitter:image" id="twImage" content="https://gajjugames.pages.dev/assets/logo.png">
+    
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="apple-touch-icon" href="assets/favicon.png">
     <link rel="stylesheet" href="assets/common.css">
@@ -272,7 +290,49 @@
         </div>
     </div>
 
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "GajjuGames",
+        "url": "https://gajjugames.pages.dev",
+        "description": "Play amazing free browser games at GajjuGames. No downloads needed!",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://gajjugames.pages.dev/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
     <script>
+        async function loadSEO() {
+            try {
+                const response = await fetch('assets/files/seo.csv');
+                const text = await response.text();
+                const lines = text.trim().split('\n');
+                const headers = lines[0].split(',');
+                const homeData = lines[1].split(',');
+                const seo = headers.reduce((obj, header, i) => {
+                    obj[header.trim()] = homeData[i]?.trim() || '';
+                    return obj;
+                }, {});
+
+                const baseUrl = window.location.origin;
+                document.getElementById('pageTitle').textContent = seo.title;
+                document.getElementById('pageDesc').content = seo.description;
+                document.getElementById('pageKeywords').content = seo.keywords;
+                document.getElementById('ogTitle').content = seo.title;
+                document.getElementById('ogDesc').content = seo.description;
+                document.getElementById('ogImage').content = `${baseUrl}/${seo.og_image}`;
+                document.getElementById('twTitle').content = seo.title;
+                document.getElementById('twDesc').content = seo.description;
+                document.getElementById('twImage').content = `${baseUrl}/${seo.og_image}`;
+            } catch (error) {
+                console.error('SEO load error:', error);
+            }
+        }
+
         async function loadCSV(path) {
             const response = await fetch(path);
             const text = await response.text();
@@ -329,6 +389,7 @@
             }
         }
 
+        loadSEO();
         loadGames();
     </script>
 </body>

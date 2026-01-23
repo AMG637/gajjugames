@@ -3,7 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Don't Tap The Red - GajjuGames</title>
+    <title id="pageTitle">Don't Tap The Red - GajjuGames</title>
+    <meta name="description" id="pageDesc" content="Test your reflexes in Don't Tap The Red! Fast-paced gameplay.">
+    <meta name="keywords" id="pageKeywords" content="reflex game, tap game, browser game">
+    <link rel="canonical" id="pageCanonical" href="https://gajjugames.pages.dev/games/1.html">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" id="ogUrl" content="https://gajjugames.pages.dev/games/1.html">
+    <meta property="og:title" id="ogTitle" content="Don't Tap The Red - GajjuGames">
+    <meta property="og:description" id="ogDesc" content="Test your reflexes!">
+    <meta property="og:image" id="ogImage" content="https://gajjugames.pages.dev/assets/images/1.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" id="twUrl" content="https://gajjugames.pages.dev/games/1.html">
+    <meta property="twitter:title" id="twTitle" content="Don't Tap The Red">
+    <meta property="twitter:description" id="twDesc" content="Test your reflexes!">
+    <meta property="twitter:image" id="twImage" content="https://gajjugames.pages.dev/assets/images/1.png">
+    
     <link rel="icon" type="image/png" href="../assets/favicon.png">
     <link rel="apple-touch-icon" href="../assets/favicon.png">
     <link rel="stylesheet" href="../assets/common.css">
@@ -782,6 +800,46 @@
     <div class="combo-effect" id="comboEffect"></div>
 
     <script type="module">
+        // Dynamic SEO Loader
+        async function loadGameSEO() {
+            try {
+                const gameId = window.location.pathname.split('/').pop().replace('.html', '');
+                const response = await fetch('../assets/files/seo.csv');
+                const text = await response.text();
+                const lines = text.trim().split('\n');
+                const headers = lines[0].split(',');
+                
+                const gameData = lines.find(line => line.startsWith(gameId + ','));
+                if (gameData) {
+                    const values = gameData.split(',');
+                    const seo = headers.reduce((obj, header, i) => {
+                        obj[header.trim()] = values[i]?.trim() || '';
+                        return obj;
+                    }, {});
+
+                    const baseUrl = window.location.origin;
+                    const pageUrl = `${baseUrl}/games/${gameId}.html`;
+                    
+                    document.getElementById('pageTitle').textContent = seo.title;
+                    document.getElementById('pageDesc').content = seo.description;
+                    document.getElementById('pageKeywords').content = seo.keywords;
+                    document.getElementById('pageCanonical').href = pageUrl;
+                    document.getElementById('ogUrl').content = pageUrl;
+                    document.getElementById('ogTitle').content = seo.title;
+                    document.getElementById('ogDesc').content = seo.description;
+                    document.getElementById('ogImage').content = `${baseUrl}/${seo.og_image}`;
+                    document.getElementById('twUrl').content = pageUrl;
+                    document.getElementById('twTitle').content = seo.title;
+                    document.getElementById('twDesc').content = seo.description;
+                    document.getElementById('twImage').content = `${baseUrl}/${seo.og_image}`;
+                }
+            } catch (error) {
+                console.error('SEO load error:', error);
+            }
+        }
+
+        loadGameSEO();
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
