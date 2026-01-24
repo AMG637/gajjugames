@@ -857,6 +857,8 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        
+        const GAME_NAME = 'dont-tap-the-red';
 
         let gameState = {
             score: 0,
@@ -925,7 +927,7 @@
 
         async function initializeStatsDocument() {
             try {
-                const statsRef = doc(db, 'stats', 'counters');
+                const statsRef = doc(db, 'games', GAME_NAME, 'stats', 'counters');
                 const statsSnap = await getDoc(statsRef);
                 
                 if (!statsSnap.exists()) {
@@ -951,7 +953,7 @@
                         createdAt: new Date().toISOString()
                     });
                     
-                    const statsRef = doc(db, 'stats', 'counters');
+                    const statsRef = doc(db, 'games', GAME_NAME, 'stats', 'counters');
                     await updateDoc(statsRef, {
                         totalPlayers: increment(1)
                     });
@@ -963,7 +965,7 @@
 
         async function loadStats() {
             try {
-                const statsRef = doc(db, 'stats', 'counters');
+                const statsRef = doc(db, 'games', GAME_NAME, 'stats', 'counters');
                 const statsSnap = await getDoc(statsRef);
                 
                 if (statsSnap.exists()) {
@@ -984,7 +986,7 @@
         async function loadLeaderboard() {
             try {
                 const today = new Date().toISOString().split('T')[0];
-                const leaderboardRef = collection(db, 'leaderboard');
+                const leaderboardRef = collection(db, 'games', GAME_NAME, 'leaderboard');
                 const querySnapshot = await getDocs(leaderboardRef);
                 const leaderboardData = [];
                 
@@ -1044,7 +1046,7 @@
             try {
                 const today = new Date().toISOString().split('T')[0];
                 const entryId = `${gameState.currentUser}_${today}`;
-                const entryRef = doc(db, 'leaderboard', entryId);
+                const entryRef = doc(db, 'games', GAME_NAME, 'leaderboard', entryId);
                 const entrySnap = await getDoc(entryRef);
                 
                 if (entrySnap.exists()) {
@@ -1076,7 +1078,7 @@
         }
 
         async function saveScore(name, score, date, entryId) {
-            await setDoc(doc(db, 'leaderboard', entryId), {
+            await setDoc(doc(db, 'games', GAME_NAME, 'leaderboard', entryId), {
                 uid: gameState.currentUser,
                 name: name,
                 score: score,
